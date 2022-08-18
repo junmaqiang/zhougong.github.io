@@ -1,0 +1,93 @@
+language: golang # 设置语言
+golang:
+  - 1.18
+dist: dist
+sudo: false
+notifications: # 异步通知
+  email:
+    recipients:
+      - shooter@qq.com
+      - hammer@163.com
+    on_success: never # default: change
+    on_failure: always # default: always
+addons_shortcuts:
+  addons_clang38: &clang38
+    apt:
+      sources:  [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8' ]
+      packages: [ 'g++-5', 'clang-3.8','libc++-dev', 'libc++abi-dev', 'gperf']
+  addons_gcc5: &gcc5
+    apt:
+      sources:  [ 'ubuntu-toolchain-r-test']
+      packages: [ 'gcc-5','g++-5', 'gperf']
+cache: yarn # 开启缓存，能加快测试速度
+branches: #仅当 develop, travis, epic, release分支出现代码提交时才触发 Travis
+  only:
+    - develop
+    - travis
+    - epic
+    - release
+matrix:
+  include:
+    - os: linux
+      env: _CXX=g++-5 _CC=gcc-5 JOBS=1
+      addons: *gcc5
+    - os: linux
+      env: _CXX=clang++-3.8 _CC=clang-3.8 JOBS=4
+      addons: *clang38
+    - os: osx
+      env: JOBS=4
+      compiler: clang
+before_deploy: # deploy之前的工作
+  - mv dist synapse-extension  #在之前yarn build之后的代码放在了dist文件夹
+  - zip -q -r synapse-extension.zip synapse-extension  # 打包压缩
+  - shasum -a 256 synapse-extension.zip | tee synapse-extension.asc # 校验值并输出结果到console
+
+deploy:
+  provider: releases # 操作 repo 的 releases 页面
+  token: $GITHUB_TOKEN # 使用github token验证身份，进行操作
+  file:
+    - synapse-extension.zip # 上传的文件
+    - synapse-extension.asc #上传的文件
+  skip_cleanup: true # 保留构建出来的文件，要上传文件到 release，所以不能自动清除
+  keep_history: true #保留提交记录。
+  on:
+    tags: true #  只有打 tag 时才运行
+before_install: #运行项目之前的操作
+  - npm install -g yarn
+  - yarn install
+#- sudo apt-get -qq update
+#- sudo apt-get install -y libxml2-dev
+addons:
+  apt:
+    packages:
+      - gperf
+install:
+  # /usr/bin/gcc is 4.6 always, but gcc-X.Y is available.
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+    export OPENSSL_ROOT_DIR=/usr/local/opt/openssl/;
+    brew link --force readline;
+    ulimit -n 1000;
+    fi
+  - false || [ -z "$_CXX" ] || export CXX=${_CXX}
+  - false || [ -z "$_CC" ] || export CC=${_CC}
+  - echo ${PATH}
+  - echo ${CXX}
+  - ${CXX} --version
+  - ${CXX} -v
+before_script: ## 根据你所用的主题和自定义的不同，这里会有所不同
+  - npm install -g hexo-cli # 在 CI 环境内安装 Hexo
+  - mkdir themes # 由于我们没有将 themes/ 上传，所以我们需要新建一个
+  - cd themes
+  - git clone https://github.com/SukkaW/hexo-theme-suka.git suka #从 Github 上拉取 Suka 主题
+  - cd suka
+  - npm install --production # 安装 Suka 主题的依赖
+  - cd ../.. # 返回站点根目录
+  - cp _config.theme.yml themes/suka/_config.yml # 将主题的配置文件放回原处
+  - npm install # 在根目录安装站点需要的依赖
+script: #主要的代码
+  - yarn test # 运行测试
+  - yarn build
+  - mkdir build
+  - cd build
+  - cmake .. && make -j${JOBS} VERBOSE=1
+  - ./test/run_all_tests --filter -client
