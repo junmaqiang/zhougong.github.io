@@ -1,44 +1,12 @@
-# 自定义文件
-apisix_logs
-Dockerfile-apisix
-api/build-tools/apisix
-manager-api
-db_backup
-auto/
-docs/
-vcpkg/
-# 配置文件
-package-lock.json
-yarn.lock
-# 输出文件
-build
-dist
-output
-# 隐藏文件
+### macOS
+.DS_Store
 **/.DS_Store
-.githash
+
+### 隐藏文件
 .github/**
-.backup.yaml
-.firebase
-.eslintcache
-.umi
-.umi-production
-.history
-.temp/**
-.vscode/**
-.idea/**
-# 后缀文件
-*.log
-**/.*.swp
-*.pyc
-*.swo
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-*.test
-*.out
-*.bak
-/*.zip
-**/node_modules
+
+### JetBrains
+.idea/
+
+### VSCode
+.vscode/
