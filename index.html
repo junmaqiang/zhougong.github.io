@@ -1,23 +1,108 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-cn">
 <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="favicon.ico" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="keywords" content="周公,周公解梦,zhougong.org"/>
-    <title>周公解梦 zhougong.org</title>
-    <style>
-        body {
-            width: 35em;
-            margin: 0 auto;
-            font-family: Tahoma, Verdana, Arial, sans-serif;
-        }
-    </style>
+	<title>周公解梦 没有我周公解不了的梦 zhougong.org</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			font-family: Arial, sans-serif;
+			text-align: center;
+			color: #fff;
+			overflow: hidden;
+			height: 100vh;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background: linear-gradient(120deg, #ff9a9e, #fad0c4, #fbc2eb, #a1c4fd, #c2e9fb, #d4fc79, #96e6a1);
+			background-size: 400% 400%;
+			animation: gradientBG 15s ease infinite;
+		}
+
+		@keyframes gradientBG {
+			0% { background-position: 0% 50%; }
+			50% { background-position: 100% 50%; }
+			100% { background-position: 0% 50%; }
+		}
+
+		.container {
+			width: 90%;
+			max-width: 600px;
+			text-align: center;
+		}
+
+		h1 {
+			font-size: 2em;
+			margin-bottom: 20px;
+		}
+
+		.input-group {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			gap: 10px;
+		}
+
+		input[type="text"] {
+			flex: 1;
+			padding: 10px;
+			font-size: 1em;
+			border: none;
+			border-radius: 5px;
+			outline: none;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+		}
+
+		button {
+			padding: 10px 20px;
+			font-size: 1em;
+			border: none;
+			border-radius: 5px;
+			background-color: #007BFF;
+			color: white;
+			cursor: pointer;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+		}
+
+		button:hover {
+			background-color: #0056b3;
+		}
+
+		#result {
+			margin-top: 20px;
+			font-size: 1em;
+			color: #fff;
+		}
+	</style>
 </head>
 <body>
-    <p>
-        <h1>本域名： zhougong.org 可租，可售!</h1><br />
-        <h3>寓意：周公、周公解梦</h3>
-    </p>
+	<div class="container">
+		<h1>周公解梦</h1>
+		<div class="input-group">
+			<input type="text" id="dreamInput" placeholder="请输入您的梦境...">
+			<button onclick="interpretDream()">开始解梦</button>
+		</div>
+		<div id="result"></div>
+	</div>
+
+	<script>
+		function interpretDream() {
+			const input = document.getElementById('dreamInput').value;
+			const resultDiv = document.getElementById('result');
+
+			if (!input.trim()) {
+				resultDiv.textContent = "请输入您的梦境内容！";
+				return;
+			}
+
+			resultDiv.textContent = "周公正在为您解梦，请稍候...";
+			setTimeout(() => {
+				resultDiv.textContent = `周公解梦结果：您梦到 "${input}" 可能意味着好运即将到来！`;
+			}, 2000);
+		}
+	</script>
 </body>
 </html>
